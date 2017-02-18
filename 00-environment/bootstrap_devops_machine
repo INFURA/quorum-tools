@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Upgrade your machine
+sudo yum --assumeyes upgrade
+sudo yum --assumeyes install wget
+sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+
+# Google Go, of course
+sudo yum --assumeyes install golang
+
+# Setup go
+mkdir ~/gowork
+mkdir ~/gowork/bin
+echo 'export GOPATH=~/gowork' >> ~/.bashrc
+echo 'export PATH=~/gowork/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# JP Morgan's Constellation dependencies
+sudo yum --assumeyes install libdb-devel libsodium-devel zlib-devel ncurses-devel gcc-c++
+wget -qO- https://get.haskellstack.org/ | sh
+
+# Quorum genesis file generator utility
+curl -sL https://rpm.nodesource.com/setup_4.x — Node.js v4 LTS "Argon" | sudo bash -
+sudo yum --assumeyes install nodejs
+cd ~
+git clone https://github.com/davebryson/quorum-genesis.git
+cd ~/quorum-genesis
+npm install
+
+# Banketh dependencies
+cd ~/gowork/src/github.com/san-lab/banketh
+go get ./...

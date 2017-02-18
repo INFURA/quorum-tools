@@ -1,0 +1,18 @@
+#!/bin/bash
+
+################################################################################
+#
+# Usage <genesis> <path to the quorum-genesis.json file>
+#
+# See sample in this very directory (genesis_sample.json)
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+LINE=$(head -n 1 $CURRENT_DIR/../../DEVOPS)
+IP=`echo $LINE | awk '{print $2}'`
+
+scp $1 banketh@$IP:/home/banketh/quorum-genesis/quorum-config.json
+$CURRENT_DIR/../../03-management/bash_devops "cd ~/quorum-genesis && ./index.js"
+$CURRENT_DIR/../../03-management/bash_devops "cd ~/quorum-genesis && cat ./quorum-genesis.json"
+echo

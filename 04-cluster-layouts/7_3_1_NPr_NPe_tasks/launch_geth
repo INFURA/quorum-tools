@@ -1,0 +1,73 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ASSETS_DIR=$CURRENT_DIR/../../02-deploy/00-assets
+
+function get_address {
+	cat $1 | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'address']"
+}
+
+
+# Reset system
+echo Reset servers
+for i in `seq 0 6`; do
+	echo node-0$i
+	$CURRENT_DIR/../../03-management/bash_node $i "ps aux | grep geth | awk '{print \$2}' | xargs kill &>/dev/null"
+	$CURRENT_DIR/../../03-management/bash_node $i "rm -rf /home/banketh/geth.log /home/banketh/ethereum/geth/"
+	$CURRENT_DIR/../../02-deploy/03-launch/geth $i "--datadir /home/banketh/ethereum init /home/banketh/ethereum/genesis.json"
+done
+
+#### Auxiliar array variable for --bootnodes option
+ENODES=()
+#### Adding public keys 
+while read -r line
+do
+	ENODES+=(enode://`echo $line | awk '{print $1}'`@)
+done < $CURRENT_DIR/../../02-deploy/00-assets/publickeys
+#### Adding private IPs
+i=0
+while read -r line
+do
+	ENODES[$i]+=`echo $line | awk '{print $3}'`":20000"
+	i=$((i+1))
+done < $CURRENT_DIR/../../NODES
+#### Setting up the function you need to return you
+#### all the other enodes
+function get_bootnodes {
+	response=""
+	for idx in `seq 0 6`; do
+		if [ $idx -ne  $1 ]; then
+			response+=${ENODES[$idx]}" "
+		fi
+	done
+	echo "$(echo $response | sed -e 's/[[:space:]]*$//' | sed 's/ /,/g')"
+}
+
+#### The common options
+COMMON_OPTS="--networkid 23723 --port 20000 --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --rpcport 21000 --vmodule core/quorum=6"
+
+#### We need to issue an special order for each node
+echo Launching geth in node-00
+$CURRENT_DIR/../../02-deploy/03-launch/geth 0 --bootnodes $(get_bootnodes 0) $COMMON_OPTS  \
+	--voteaccount "\"0x$(get_address $ASSETS_DIR/0_address_0)\"" \
+	--votepassword "\"\"" \
+	--blockmakeraccount "\"0x$(get_address $ASSETS_DIR/0_address_1)\"" \
+	--blockmakerpassword "\"\"" \
+	--minblocktime 2 \
+	--maxblocktime 5
+echo Launching geth in node-01
+$CURRENT_DIR/../../02-deploy/03-launch/geth 1 --bootnodes $(get_bootnodes 1) $COMMON_OPTS \
+	--voteaccount "\"0x$(get_address $ASSETS_DIR/1_address_0)\"" \
+	--votepassword "\"\""
+echo Launching geth in node-02
+$CURRENT_DIR/../../02-deploy/03-launch/geth 2 --bootnodes $(get_bootnodes 2) $COMMON_OPTS \
+	--voteaccount "\"0x$(get_address $ASSETS_DIR/2_address_0)\"" \
+	--votepassword "\"\""
+echo Launching geth in node-03
+$CURRENT_DIR/../../02-deploy/03-launch/geth 3 --bootnodes $(get_bootnodes 3) $COMMON_OPTS
+echo Launching geth in node-04
+$CURRENT_DIR/../../02-deploy/03-launch/geth 4 --bootnodes $(get_bootnodes 4) $COMMON_OPTS
+echo Launching geth in node-05
+$CURRENT_DIR/../../02-deploy/03-launch/geth 5 --bootnodes $(get_bootnodes 5) $COMMON_OPTS
+echo Launching geth in node-06
+$CURRENT_DIR/../../02-deploy/03-launch/geth 6 --bootnodes $(get_bootnodes 6) $COMMON_OPTS

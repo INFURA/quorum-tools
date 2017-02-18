@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ASSETS_DIR=$CURRENT_DIR/../../02-deploy/00-assets
+
+function get_address {
+	cat $1 | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'address']"
+}

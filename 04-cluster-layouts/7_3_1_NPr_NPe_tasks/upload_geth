@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+### Upload
+for i in `seq 0 6`; do
+	$CURRENT_DIR/../../02-deploy/02-upload/geth $i
+done

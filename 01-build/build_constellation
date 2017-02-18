@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# JM Morgan's Constellation (This one is _really_ long)
+cd ~
+git clone https://github.com/jpmorganchase/constellation.git
+cd ~/constellation
+stack setup
+stack install
+cp ~/.local/bin/* ~/gowork/src/github.com/san-lab/banketh/devops/01-build/bin/.

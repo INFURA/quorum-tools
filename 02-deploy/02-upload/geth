@@ -1,0 +1,28 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../../NODES
+
+SSH_COMMAND="ssh banketh@${NODES[$1]}"
+
+# Stop whatever geth processes running
+$SSH_COMMAND "pid=\$(ps aux | grep 'geth' | awk '{print \$2}' | head -1); echo \$pid |xargs kill"
+
+DATE=`date -u +"%Y%m%d.%H%M%S"`
+echo Uploading new executable geth-$DATE
+$SSH_COMMAND "mkdir ~/execs &>/dev/null"
+scp $CURRENT_DIR/../../01-build/bin/geth banketh@${NODES[$1]}:~/execs/geth-$DATE
+
+echo Creating Symlink
+$SSH_COMMAND "ln -s -f ~/execs/geth-$DATE geth"
+
+# Show result
+$SSH_COMMAND "ls -al geth"

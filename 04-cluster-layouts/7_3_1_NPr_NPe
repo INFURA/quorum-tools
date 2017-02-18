@@ -1,0 +1,41 @@
+#!/bin/bash
+
+################################################################################
+#
+# This one takes care of your 7 node setup and sets up a cluster with
+# 3 voters and 1 blockmaker. Also the nodes are not permissioned and no
+# private transaction is happening.
+#
+# We run this script with the assumption that we are in the `devops` server,
+# which has the programs required to prepare the executables
+# and blockchain assets.
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Server preparation
+## Should have been done before performing this script
+
+# Build elements
+## Geth
+## Should have been done before performing this script
+
+# Prepare your assets
+echo Preparing Assets...
+$CURRENT_DIR/7_3_1_NPr_NPe_tasks/prepare_assets
+
+# Deploy
+## Assets
+$CURRENT_DIR/../02-deploy/02-upload/assets
+
+## Geth
+echo Uploading geth
+$CURRENT_DIR/7_3_1_NPr_NPe_tasks/upload_geth
+
+### Launch geth
+echo Init and Launch geth nodes
+$CURRENT_DIR/7_3_1_NPr_NPe_tasks/launch_geth
+
+## Tail to verify
+$CURRENT_DIR/../03-management/tail_all_nodes

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+RND=$(perl -e '@c=("A".."Z","a".."z",0..9);$p.=$c[rand(scalar @c)] for 1..32; print "$p\n"')
+mkdir /tmp/$RND
+
+ACCOUNT=$($GOPATH/src/github.com/ethereum/go-ethereum/build/bin/geth --verbosity 0 --datadir /tmp/$RND --exec "personal.newAccount('')" console)
+find /tmp/$RND -name "*${ACCOUNT:3:40}*" -exec cat {} \;
+echo
+
+# Say goodbye
+rm -rf /tmp/$RND

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+ASSETS_DIR=$CURRENT_DIR/../../02-deploy/00-assets
+
+function get_address {
+	cat $1 | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'address']"
+}
+
+# Cleanup
+rm -rf $ASSETS_DIR/genesis.json $ASSETS_DIR/genesis-specs.json \
+	$ASSETS_DIR/*_nodekey \
+	$ASSETS_DIR/*_address_* $ASSETS_DIR/publickeys
+
+## Voter accounts (3)
+## <node number>_address_<account number inside node>
+$CURRENT_DIR/../../02-deploy/01-prepare-assets/address > $ASSETS_DIR/0_address_0
+$CURRENT_DIR/../../02-deploy/01-prepare-assets/address > $ASSETS_DIR/1_address_0
+$CURRENT_DIR/../../02-deploy/01-prepare-assets/address > $ASSETS_DIR/2_address_0
+
+## Blockmaker accounts (1)
+$CURRENT_DIR/../../02-deploy/01-prepare-assets/address > $ASSETS_DIR/0_address_1
+
+echo Created voter and blockmaker ethereum accounts
+find $CURRENT_DIR/../../02-deploy/00-assets -name "*_address_*"
+
+## Nodekeys (7)
+rm -rf $ASSETS_DIR/publickeys
+for i in `seq 0 6`; do
+	RESULT=$($CURRENT_DIR/../../02-deploy/01-prepare-assets/node)
+	echo $RESULT | awk '{print $1;}' > $ASSETS_DIR/${i}_nodekey
+	echo $RESULT | awk '{print $2;}' >> $ASSETS_DIR/publickeys
+done
+
+echo Created nodekeys and storing enodes for further configuration
+find $CURRENT_DIR/../../02-deploy/00-assets -name "*_nodekey"
+echo
+cat $CURRENT_DIR/../../02-deploy/00-assets/publickeys
+
+## Genesis File
+## Write the genesis-specs.json file
+GENESIS_SPECS=$CURRENT_DIR/../../02-deploy/00-assets/genesis-specs.json
+VOTERS_ARRAY="\"0x$(get_address $ASSETS_DIR/0_address_0)\", "
+VOTERS_ARRAY+="\"0x$(get_address $ASSETS_DIR/1_address_0)\","
+VOTERS_ARRAY+="\"0x$(get_address $ASSETS_DIR/2_address_0)\""
+MAKERS_ARRAY="\"0x$(get_address $ASSETS_DIR/0_address_1)\""
+echo "{\"threshold\":3,\"voters\":[$VOTERS_ARRAY], \"makers\": [$MAKERS_ARRAY]}" | python -m "json.tool" > $GENESIS_SPECS
+echo Generated genesis-specs.json
+cat $GENESIS_SPECS
+
+## Create and store the genesis block
+GENESIS_FILE=$CURRENT_DIR/../../02-deploy/00-assets/genesis.json
+$CURRENT_DIR/../../02-deploy/01-prepare-assets/genesis $GENESIS_SPECS > $GENESIS_FILE
+
+echo Genesis file generated
+head -n3 $GENESIS_FILE && echo "/.../" && tail -n3 $GENESIS_FILE

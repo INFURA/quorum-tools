@@ -1,0 +1,4 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+go run $CURRENT_DIR/nodekey.go --privkey $(perl -e '@c=("a".."f",0..9);$p.=$c[rand(scalar @c)] for 1..64; print "$p\n"')

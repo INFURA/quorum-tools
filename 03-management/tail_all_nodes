@@ -1,0 +1,19 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../NODES
+
+for i in `seq 0 6`;
+do
+	echo $i
+	IP="${NODES[$i]}"
+	ssh banketh@$IP tail /home/banketh/geth.log
+done 

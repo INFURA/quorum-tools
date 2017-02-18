@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Open the port in the firewall to enable the peers to add and talk each other
+sudo firewall-cmd --zone=public --add-port=20000/tcp --permanent
+sudo firewall-cmd --zone=public --add-port=21000/tcp --permanent
+sudo firewall-cmd --reload
+
+# You need these dependencies to be able to run constellation
+sudo yum --assumeyes upgrade
+sudo yum --assumeyes install wget
+sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+sudo yum --assumeyes install libsodium-devel
+
+# Finally, let's create these directories
+mkdir /home/banketh/conf &> /dev/null
+mkdir /home/banketh/execs &> /dev/null
+mkdir /home/banketh/ethereum &> /dev/null

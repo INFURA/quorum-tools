@@ -1,0 +1,42 @@
+#!/bin/bash
+
+################################################################################
+#
+# Brief parameter explanation
+#
+# $1: Node number (as in node-00, node-01...)
+# $2: Geth Parameters
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../../NODES
+
+SSH_COMMAND="ssh banketh@${NODES[$1]}"
+
+# Just launch the node with the given parameters
+$SSH_COMMAND << EOF
+hostname
+
+echo -e "\n======== Launch geth  ========\n" >> /home/banketh/geth.log
+
+nohup \
+	./geth --identity \$HOSTNAME \
+		--datadir ~/ethereum ${@:2} \
+	&>> /home/banketh/geth.log &
+EOF
+
+# Display information
+$SSH_COMMAND "ps aux | grep geth | grep -v grep"
+$SSH_COMMAND "tail -n30 /home/banketh/geth.log"
+
+echo
+echo We are done!
