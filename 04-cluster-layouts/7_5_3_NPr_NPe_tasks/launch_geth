@@ -14,7 +14,7 @@ done
 
 #### Auxiliar array variable for --bootnodes option
 ENODES=()
-#### Adding public keys 
+#### Adding public keys
 while read -r line
 do
 	ENODES+=(enode://`echo $line | awk '{print $1}'`@)
@@ -39,7 +39,7 @@ function get_bootnodes {
 }
 
 #### The common options
-COMMON_OPTS="--networkid 23723 --port 20000 --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --rpcport 21000 --vmodule core/quorum=6"
+COMMON_OPTS="--networkid 23723 --port 20000 --rpccorsdomain * --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --rpcport 21000 --vmodule core/quorum=6"
 
 #### We need to issue an special order for each node
 echo Launching geth in node-00
