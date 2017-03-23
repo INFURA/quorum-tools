@@ -1,28 +1,33 @@
 #!/bin/bash
 
+################################################################################
+#
+# Will upload geth from ./02-build/bin
+#
+# Usage
+#
+# ./03-deploy/02-upload/constellation <node_number>
+#
+################################################################################
+
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-# Load the machines list
-while read -r line
-do
-	key=`echo $line | awk '{print $1}'`
-	val=`echo $line | awk '{print $2}'`
-
-	NODES[$key]=$val
-done < $CURRENT_DIR/../../NODES
-
-SSH_COMMAND="ssh banketh@${NODES[$1]}"
-
-# Stop whatever geth processes running
-$SSH_COMMAND "pid=\$(ps aux | grep 'constellation' | awk '{print \$2}' | head -1); echo \$pid |xargs kill"
+source $CURRENT_DIR/_header
 
 DATE=`date -u +"%Y%m%d.%H%M%S"`
+SSH_COMMAND="ssh -i $SSL_CERT_PATH $SSH_USERNAME@${NODES[$1]}"
+
 echo Uploading new executable constellation-node-$DATE
+
+# Stop whatever constellation process the machine is running
+# This should be done with a management command (from 04-mgmt), but we want to make sure
+$SSH_COMMAND "ps aux | grep constellation | awk '{print \$2}' | xargs kill &>/dev/null"
+
 $SSH_COMMAND "mkdir ~/execs &>/dev/null"
-scp $CURRENT_DIR/../../01-build/bin/constellation-node banketh@${NODES[$1]}:~/execs/constellation-node-$DATE
+scp -i $SSL_CERT_PATH $CURRENT_DIR/../../02-build/bin/constellation-node \
+	$SSH_USERNAME@${NODES[$1]}:~/execs/constellation-node-$DATE
 
 echo Creating Symlink
 $SSH_COMMAND "ln -s -f ~/execs/constellation-node-$DATE constellation-node"
 
 # Show result
-$SSH_COMMAND "ls -al constellation-node"
+$SSH_COMMAND "ls -al constellation-node && ls -al ~/execs/constellation-node-$DATE"

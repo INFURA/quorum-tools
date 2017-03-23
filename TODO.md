@@ -20,8 +20,16 @@
 
 * Upload
   * Assets
-    * Document
+    * Documentation
+  * Constellation
+    * Version as an option
+    * Documentation
+  * Geth
+    * Version as an option
+    * Documentation
 * Launch
+    * Constellation
+    * Geth
 
 ## 04 Management
 
@@ -30,8 +38,10 @@
 
 ## 05 Layouts
 
-* Do `3_3_1_0_NPr_NPe`
+* Do `3_3_1_0_Pr_NPe`
   * Start with specific tasks
+    * Upload geth (version specific) on all machines
+    * Upload constellation (version specific) on all machines
   * Do the "One script"
 
 ## 06 Benchmarking
