@@ -6,4 +6,4 @@ git clone https://github.com/jpmorganchase/constellation.git
 cd ~/constellation
 stack setup
 stack install
-cp ~/.local/bin/* ~/gowork/src/github.com/san-lab/banketh/devops/01-build/bin/.
+cp ~/.local/bin/* ~/execs/.

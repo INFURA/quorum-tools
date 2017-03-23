@@ -7,7 +7,4 @@ cd ~/quorum
 git checkout master
 git pull # Just in case
 make geth
-cp ~/quorum/build/bin/geth $GOPATH/src/github.com/san-lab/banketh/devops/01-build/bin/.
-
-# Closing message
-echo "Done. You can find both programs (geth, bootnode) in devops/01-build/bin"
+cp ~/quorum/build/bin/geth ~/execs.
