@@ -1,0 +1,33 @@
+#!/bin/bash
+
+################################################################################
+#
+# This is your compiler machine setup
+#
+# Base Machine: RHEL 7.2.
+#
+# You should be able to build here:
+#
+# * Quorum Geth
+# * Constellation Node and Enclave
+#
+################################################################################
+
+# Upgrade your machine
+sudo yum --assumeyes upgrade
+sudo yum --assumeyes install wget
+sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+
+# Google Go, of course
+sudo yum --assumeyes install golang
+
+# Setup go
+mkdir ~/gowork
+mkdir ~/gowork/bin
+echo 'export GOPATH=~/gowork' >> ~/.bashrc
+echo 'export PATH=~/gowork/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# JP Morgan's Constellation dependencies
+sudo yum --assumeyes install libdb-devel libsodium-devel zlib-devel ncurses-devel gcc-c++
+wget -qO- https://get.haskellstack.org/ | sh

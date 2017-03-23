@@ -1,0 +1,14 @@
+#!/bin/bash
+
+################################################################################
+#
+#
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $CURRENT_DIR/_header
+
+IP="${NODES[$1]}"
+
+ssh banketh@$IP tail -f /home/banketh/geth.log

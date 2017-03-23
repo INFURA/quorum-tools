@@ -1,0 +1,20 @@
+#!/bin/bash
+
+################################################################################
+#
+# Gain Bash access into a remote node, ot perform a command
+#
+# Usage
+#
+# ./bash_node <node_id>
+#
+# ./bash_node <node_id> <command>
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $CURRENT_DIR/_header
+
+# Let's "bash" into the machine
+MACHINE_IP=${NODES[$1]}
+ssh -i $SSL_CERT_PATH $SSH_USERNAME@$MACHINE_IP $2

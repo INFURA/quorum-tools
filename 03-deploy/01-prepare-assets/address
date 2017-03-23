@@ -1,0 +1,33 @@
+#!/bin/bash
+
+################################################################################
+#
+# This script will invoke the docker image
+# infura/quorum-tools-suite
+#
+# You need to have docker installed in your machine!
+#
+# Usage:
+#
+# ./address
+#
+# Output:
+#
+# Dump of a geth address file
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $CURRENT_DIR/_header
+
+# We create a temporary file we need to execute inside the container
+echo "/execs/geth --verbosity 0 --exec \"personal.newAccount('')\" console &>/dev/null" > $ASSETS_DIR/$RND_NAME
+echo "find /root/.ethereum/keystore -type f -name \"*\${ACCOUNT:3:40}*\" -exec cat {} \\;" >> $ASSETS_DIR/$RND_NAME
+echo "echo" >> $ASSETS_DIR/$RND_NAME
+chmod +x $ASSETS_DIR/$RND_NAME
+
+# Call the container
+docker run -ti --rm -v $ASSETS_DIR:/workspace -w /workspace infura/quorum-tools-assets /bin/bash -c "/workspace/$RND_NAME"
+
+# And delete the file
+rm $ASSETS_DIR/$RND_NAME

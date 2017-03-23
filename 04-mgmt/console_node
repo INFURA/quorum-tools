@@ -1,0 +1,14 @@
+#!/bin/bash
+
+################################################################################
+#
+#
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $CURRENT_DIR/_header
+
+IP="${NODES[$1]}"
+
+ssh banketh@$IP ./geth --exec '"'$2'"' attach ipc:///home/banketh/ethereum/geth.ipc

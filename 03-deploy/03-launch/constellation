@@ -1,0 +1,26 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../../NODES
+
+SSH_COMMAND="ssh banketh@${NODES[$1]}"
+
+# Launch constellation with nohup
+$SSH_COMMAND << EOF
+hostname
+nohup \
+	./constellation-node conf/tm$(($1+1)).conf \
+	> /home/banketh/constellation.log 2>&1 &
+EOF
+
+# Display information
+$SSH_COMMAND "ps aux | grep constellation | grep -v grep"
+$SSH_COMMAND "head /home/banketh/constellation.log"

@@ -1,0 +1,62 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Load the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../../NODES
+
+
+################################################################################
+#
+# For this script to work, we will need a small convention
+#
+# Variables in an asset file
+#
+# + Node
+# + Type: nodekey, address
+# + Number: 0, 1, 2
+#
+# A file will have as name, then node_type_number
+# ex: 0_address_0
+# The uploader will parse the names accordingly
+#
+# genesis.json is unique for all nodes, it will not carry node prefix
+#
+################################################################################
+
+echo Uploading assets
+
+NODE=0
+while true; do
+	if [ -f $CURRENT_DIR/../00-assets/${NODE}_nodekey ]; then
+		echo "Uploading nodekey and genesis.json for node ${NODE}"
+		ssh banketh@${NODES[$NODE]} "mkdir -p ~/ethereum/keystore &> /dev/null"
+		scp $CURRENT_DIR/../00-assets/${NODE}_nodekey banketh@${NODES[$NODE]}:ethereum/nodekey
+		scp $CURRENT_DIR/../00-assets/genesis.json banketh@${NODES[$NODE]}:ethereum/genesis.json
+		scp $CURRENT_DIR/../00-assets/${NODE}-constellation-prv banketh@${NODES[$NODE]}:ethereum/constellation-prv
+		scp $CURRENT_DIR/../00-assets/${NODE}-constellation-pub banketh@${NODES[$NODE]}:ethereum/constellation-pub
+
+		ADDRESS_ID=0
+		while true; do
+			if [ -f $CURRENT_DIR/../00-assets/${NODE}_address_${ADDRESS_ID} ]; then
+				echo "Uploading address ${ADDRESS_ID} for node ${NODE}"
+				scp $CURRENT_DIR/../00-assets/${NODE}_address_${ADDRESS_ID} \
+					banketh@${NODES[$NODE]}:ethereum/keystore/address_${ADDRESS_ID}
+
+				ADDRESS_ID=$((ADDRESS_ID+1))
+			else
+				break
+			fi
+		done
+
+		NODE=$((NODE+1))
+	else
+		break
+	fi
+done

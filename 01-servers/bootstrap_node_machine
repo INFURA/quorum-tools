@@ -1,0 +1,25 @@
+#!/bin/bash
+
+################################################################################
+#
+# Usage (you need to have sudo privileges to run this script)
+#
+# ./bootstrap_node_machine $USER
+#
+################################################################################
+
+# Open the port in the firewall to enable the peers to add and talk each other
+sudo firewall-cmd --zone=public --add-port=20000/tcp --permanent # geth port
+sudo firewall-cmd --zone=public --add-port=21000/tcp --permanent # RPC port
+sudo firewall-cmd --zone=public --add-port=22000/tcp --permanent # constellation port
+sudo firewall-cmd --reload
+
+# You need these dependencies to be able to run constellation
+sudo yum --assumeyes upgrade
+sudo yum --assumeyes install wget
+sudo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+sudo yum --assumeyes install libsodium-devel
+
+# Finally, let's create these directories
+mkdir /home/$1/execs &> /dev/null
+mkdir /home/$1/ethereum &> /dev/null

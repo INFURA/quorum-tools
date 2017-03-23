@@ -1,0 +1,17 @@
+#!/bin/bash
+
+################################################################################
+#
+#
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $CURRENT_DIR/_header
+
+for i in `seq 0 3`;
+do
+	echo $i
+	IP="${NODES[$i]}"
+	ssh banketh@$IP "ps aux | grep geth"
+done 

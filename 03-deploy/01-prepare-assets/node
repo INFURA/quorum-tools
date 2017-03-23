@@ -1,0 +1,29 @@
+#!/bin/bash
+
+################################################################################
+#
+# This script will invoke the docker image
+# infura/quorum-tools-suite
+#
+# You need to have docker installed in your machine!
+#
+# Usage:
+#
+# ./node
+#
+# Output:
+#
+# Private ECDSA key (the nodekey of a geth node)
+# Public ECDSA key (the long hex string in an ethereum enode address)
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Call the container
+# This is simpler than `address` and `constellation` as we are just
+# mounting into the container a golang file
+docker run -ti --rm \
+	-v $CURRENT_DIR:/workspace \
+	-w /workspace infura/quorum-tools-assets \
+	/bin/bash -c "/execs/nodekey --privkey \$(xxd -l 32 -p /dev/random | tr -d ' \n')"
