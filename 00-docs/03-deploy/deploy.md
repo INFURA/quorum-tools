@@ -69,6 +69,20 @@ $ echo ${RESULT[0]} > /tmp/1-pub
 $ echo ${RESULT[1]} > /tmp/1-prv
 ```
 
+### Constellation configuration
+
+This script
+
+```
+./03-deploy/01-prepare-assets/constellation_conf <node_number>
+```
+
+Sets your constellation configuration files taking into account
+the `SSH_USERNAME` variable and the private IPs of the nodes, specified
+in the `<cluster-name>-NODES` file.
+
+The file will be created in your assets directory.
+
 ### Nodekey
 
 This script
@@ -141,15 +155,35 @@ This one is really easy to pipe into a file ;-)
 
 ### Assets
 
-(TODO)
+```
+./03-deploy/02-upload/assets
+```
+
+Will copy into each node of the system their respective assets, namely
+
+- nodekey
+- constellation private and public keys
+- constellation configuration
+- genesis block
+- ethereum addresses
 
 ### Geth
 
-(TODO)
+```
+./03-deploy/02-upload/geth <node_number>
+```
+
+Picks the `geth` executable you should have built first and put into the folder
+`02-build/bin` and upload it into the server `<node_number>`.
 
 ### Constellation
 
-(TODO)
+```
+./03-deploy/02-upload/constellation <node_number>
+```
+
+Picks the `constellation-node` executable you should have built first and put into
+the folder `02-build/bin` and upload it into the server `<node_number>`.
 
 ## Launch
 

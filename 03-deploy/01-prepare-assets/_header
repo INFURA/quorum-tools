@@ -9,6 +9,16 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DEPLOY_CONF_PATH=$CURRENT_DIR/../../deploy.conf
 CLUSTER_NAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'cluster-name']" )"
+SSH_USERNAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'ssh-username']" )"
 ASSETS_DIR=$CURRENT_DIR/../00-assets/$CLUSTER_NAME
 mkdir -p $ASSETS_DIR
 RND_NAME=$(perl -e '@c=("A".."Z","a".."z",0..9);$p.=$c[rand(scalar @c)] for 1..32; print "$p\n"')
+
+# Loads the private ips
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $3}'`
+
+	PRIVATE_IPS[$key]=$val
+done < $CURRENT_DIR/../../01-servers/IPs/$CLUSTER_NAME-NODES

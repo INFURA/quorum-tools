@@ -26,13 +26,14 @@ echo Uploading assets
 NODE=0
 while true; do
 	if [ -f $ASSETS_DIR/${NODE}-nodekey ]; then
-		echo -e "\nUploading nodekey, genesis.json and constellation keys for node ${NODE}"
+		echo -e "\nUploading nodekey, genesis.jsoni; and constellation keys and conf for node ${NODE}"
 
 		ssh -i $SSL_CERT_PATH $SSH_USERNAME@${NODES[$NODE]} "mkdir -p ~/ethereum/keystore &> /dev/null"
 		scp -i $SSL_CERT_PATH $ASSETS_DIR/${NODE}-nodekey $SSH_USERNAME@${NODES[$NODE]}:ethereum/nodekey
 		scp -i $SSL_CERT_PATH $ASSETS_DIR/genesis.json $SSH_USERNAME@${NODES[$NODE]}:ethereum/genesis.json
 		scp -i $SSL_CERT_PATH $ASSETS_DIR/${NODE}-constellation-prv $SSH_USERNAME@${NODES[$NODE]}:ethereum/constellation-prv
 		scp -i $SSL_CERT_PATH $ASSETS_DIR/${NODE}-constellation-pub $SSH_USERNAME@${NODES[$NODE]}:ethereum/constellation-pub
+		scp -i $SSL_CERT_PATH $ASSETS_DIR/${NODE}-constellation-conf $SSH_USERNAME@${NODES[$NODE]}:ethereum/constellation-conf
 
 		ADDRESS_ID=0
 		while true; do

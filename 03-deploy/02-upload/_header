@@ -6,7 +6,6 @@
 #
 ################################################################################
 
-# Useful variables
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DEPLOY_CONF_PATH=$CURRENT_DIR/../../deploy.conf
 SSL_CERT_PATH="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'ssl-cert-path']" )"
