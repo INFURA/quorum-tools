@@ -13,7 +13,7 @@
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $CURRENT_DIR/_header
 
-SSH_COMMAND="ssh -i $SSL_CERT_PATH $SSH_USERNAME@${NODES[$i]}"
+SSH_COMMAND="ssh -i $SSL_CERT_PATH $SSH_USERNAME@${NODES[$1]}"
 
 # Launch constellation with nohup
 $SSH_COMMAND << EOF
