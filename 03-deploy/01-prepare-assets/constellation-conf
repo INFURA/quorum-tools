@@ -17,7 +17,7 @@ source $CURRENT_DIR/_header
 
 ETHEREUM_PATH="/home/$SSH_USERNAME/ethereum"
 
-FILE_PAYLOAD=$(cat $CURRENT_DIR/constellation_conf.sample)
+FILE_PAYLOAD=$(cat $CURRENT_DIR/constellation-conf.sample)
 
 FILE_PAYLOAD=${FILE_PAYLOAD/url = \"http:\/\/127.0.0.1/url = \"http:\/\/${PRIVATE_IPS[$1]}}
 
@@ -26,13 +26,13 @@ FILE_PAYLOAD=${FILE_PAYLOAD/foo.ipc/$ETHEREUM_PATH\/constellation.ipc}
 OTHERNODES=""
 for idx in `seq 0 $((${#PRIVATE_IPS[@]} - 1))`; do
 	if [ $idx -ne $1 ]; then
-		OTHERNODES+="http://"${PRIVATE_IPS[$idx]}":22000/ "
+		OTHERNODES+="\"http://"${PRIVATE_IPS[$idx]}":22000/\" "
 	fi
 done
 OTHERNODES=$(echo $OTHERNODES | sed -e 's/[[:space:]]*$//' | sed 's/ /, /g')
 
-FILE_PAYLOAD=${FILE_PAYLOAD/http:\/\/127.0.0.1:22000\//$OTHERNODES}
+FILE_PAYLOAD=${FILE_PAYLOAD/\"http:\/\/127.0.0.1:22000\/\"/$OTHERNODES}
 
 FILE_PAYLOAD=${FILE_PAYLOAD//SSH_USERNAME/$SSH_USERNAME}
 
-echo "$FILE_PAYLOAD" > $ASSETS_DIR/$1-constellation-conf
+echo "$FILE_PAYLOAD" #> $ASSETS_DIR/$1-constellation-conf

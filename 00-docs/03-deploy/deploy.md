@@ -75,7 +75,7 @@ $ ls ./03-deploy/00-assets/my-cluster/0-constellation-*
 This script
 
 ```
-./03-deploy/01-prepare-assets/constellation_conf <node_number>
+./03-deploy/01-prepare-assets/constellation-conf <node_number>
 ```
 
 Sets your constellation configuration files taking into account
