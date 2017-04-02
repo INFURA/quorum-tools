@@ -70,12 +70,15 @@ RUN set -ex \
 
 ################################################################################
 #
-# Constellation v0.0.1-alpha
+# Constellation
+# commit c84d0771a6c52c9e3a79d9694db25349b48649ed
+# March 27th
 #
 ################################################################################
 
-RUN git clone --depth 1 -b v0.0.1-alpha https://github.com/jpmorganchase/constellation.git /constellation \
+RUN git clone https://github.com/jpmorganchase/constellation.git /constellation \
  && cd /constellation \
+ && git reset c84d0771a6c52c9e3a79d9694db25349b48649ed --hard \
  && apt-get update -y \
  && apt-get upgrade -y \
  && apt-get install -y libdb-dev libsodium-dev zlib1g-dev libtinfo-dev \

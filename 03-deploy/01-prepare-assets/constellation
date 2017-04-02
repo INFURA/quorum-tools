@@ -9,7 +9,7 @@
 #
 # Usage:
 #
-# ./constellation
+# ./constellation <node_number>
 #
 # Output:
 #
@@ -22,10 +22,9 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source $CURRENT_DIR/_header
 
 # We create a temporary file we need to execute inside the container
-
 echo "printf '\\n' | /execs/constellation-enclave-keygen /tmp/constellation-key &>/dev/null" > $ASSETS_DIR/$RND_NAME
-echo "cat /tmp/constellation-key.pub && echo" >> $ASSETS_DIR/$RND_NAME
-echo "cat /tmp/constellation-key.key && echo" >> $ASSETS_DIR/$RND_NAME
+echo "cp /tmp/constellation-key.pub $1-constellation-pub" >> $ASSETS_DIR/$RND_NAME
+echo "cp /tmp/constellation-key.key $1-constellation-prv" >> $ASSETS_DIR/$RND_NAME
 chmod +x $ASSETS_DIR/$RND_NAME
 
 # Call the container

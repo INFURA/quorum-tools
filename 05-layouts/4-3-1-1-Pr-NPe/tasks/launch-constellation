@@ -1,0 +1,16 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+echo Resetting constellation on each server
+for i in `seq 0 3`; do
+	echo node-0$i
+	$CURRENT_DIR/../../../04-mgmt/bash-node $i "ps aux | grep constellation | awk '{print \$2}' | xargs kill &>/dev/null"
+done
+
+echo
+echo Launching constellation on each server
+for i in `seq 0 3`; do
+	echo node-0$i
+	$CURRENT_DIR/../../../03-deploy/03-launch/constellation
+done

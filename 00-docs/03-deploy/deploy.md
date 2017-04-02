@@ -47,26 +47,27 @@ You can, of course, pipe the output of this command
 This script
 
 ```
-./03-deploy/01-prepare-assets/constellation
+./03-deploy/01-prepare-assets/constellation <node_number>
 ```
 
-Will invoke the image `infura/quorum-tools-assets`, create and dump in the terminal
-a new constellation prv/pub pair.
+Will invoke the image `infura/quorum-tools-assets`, create and will copy
+the constellation private and public keys into the assets directory
+under the names
 
+```
+<node_number>-constellation-prv
+<node_number>-constellation-pub
+```
 Example
 
 ```
-$ 03-deploy/01-prepare-assets/constellation
+$ 03-deploy/01-prepare-assets/constellation 0
 5JIgWVCHBJ3ObqN+rr2/OINxuyaijXVHMn7/Q0MU804=
 {"data":{"bytes":"q+5prDHbxo+GWaREhWGLa2lqmJD96Wnn5O5DO28FBLE="},"type":"unlocked"}
-```
 
-To pipe the output into files, do, inside of other script, or by separate lines
-
-```
-$ RESULT=($(./03-deploy/01-prepare-assets/constellation))
-$ echo ${RESULT[0]} > /tmp/1-pub
-$ echo ${RESULT[1]} > /tmp/1-prv
+$ ls ./03-deploy/00-assets/my-cluster/0-constellation-*
+0-constellation-prv
+0-constellation-pub
 ```
 
 ### Constellation configuration

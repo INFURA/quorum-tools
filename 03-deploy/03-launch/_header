@@ -1,0 +1,23 @@
+#!/bin/bash
+
+################################################################################
+#
+# Management Script Header
+#
+################################################################################
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DEPLOY_CONF_PATH=$CURRENT_DIR/../../deploy.conf
+SSL_CERT_PATH="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'ssl-cert-path']" )"
+SSH_USERNAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'ssh-username']" )"
+CLUSTER_NAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'cluster-name']" )"
+ASSETS_DIR=$CURRENT_DIR/../00-assets/$CLUSTER_NAME
+
+# Loads the machines list
+while read -r line
+do
+	key=`echo $line | awk '{print $1}'`
+	val=`echo $line | awk '{print $2}'`
+
+	NODES[$key]=$val
+done < $CURRENT_DIR/../../01-servers/IPs/$CLUSTER_NAME-NODES
