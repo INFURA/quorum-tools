@@ -1,0 +1,87 @@
+#!/bin/bash
+
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DEPLOY_CONF_PATH=$CURRENT_DIR/../../../deploy.conf
+CLUSTER_NAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'cluster-name']" )"
+SSH_USERNAME="$( cat $DEPLOY_CONF_PATH | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'ssh-username']" )"
+ASSETS_DIR=$CURRENT_DIR/../../../03-deploy/00-assets/$CLUSTER_NAME
+
+echo Resetting geth on each server
+for i in `seq 0 3`; do
+	echo node-0$i
+	$CURRENT_DIR/../../../04-mgmt/bash-node $i "ps aux | grep geth | awk '{print \$2}' | xargs kill &>/dev/null"
+	echo
+done
+
+#### Auxiliar array variable for --bootnodes option
+ENODES=()
+
+#### Adding public keys
+for i in `seq 0 3`
+do
+	ENODES+=(enode://$(cat $ASSETS_DIR/$i-enode)@)
+done
+
+#### Adding private IPs
+i=0
+while read -r line
+do
+	ENODES[$i]+=`echo $line | awk '{print $3}'`":20000"
+	i=$((i+1))
+done < $CURRENT_DIR/../../../01-servers/IPs/$CLUSTER_NAME-NODES
+
+#### Setting up the function you need to return you
+#### all the other enodes
+function get_bootnodes {
+	response=""
+	for idx in `seq 0 6`; do
+		if [ $idx -ne  $1 ]; then
+			response+=${ENODES[$idx]}" "
+		fi
+	done
+	echo "$(echo $response | sed -e 's/[[:space:]]*$//' | sed 's/ /,/g')"
+}
+
+#### Auxiliar Function
+function get_address {
+	cat $1 | python -c "import json, sys;obj=json.load(sys.stdin);print obj[u'address']"
+}
+
+echo Launching geth on each server
+#### The common options
+COMMON_OPTS="--networkid 4242 --port 20000 --rpccorsdomain \* --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --rpcport 21000 --vmodule core/quorum=6"
+
+# TE FALTA LA PARTE DE CONSTELLATION!
+
+echo Launching geth in node-00
+$CURRENT_DIR/../../../03-deploy/03-launch/geth 0 --bootnodes $(get_bootnodes 0) $COMMON_OPTS  \
+	--voteaccount "\"0x$(get_address $ASSETS_DIR/0-address-0)\"" \
+	--votepassword "\"\"" \
+	--blockmakeraccount "\"0x$(get_address $ASSETS_DIR/0-address-1)\"" \
+	--blockmakerpassword "\"\"" \
+	--minblocktime 1 \
+	--maxblocktime 3
+
+#    nohup ./execs/geth --datadir ethereum --networkid 4242 --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --port 20000 --rpcport 21000 --voteaccount "0x8eb98ca8f1e754e964be7d17f83d613cb95b2433" --votepassword "" --blockmakeraccount "0xfe7d8f89a458ef0cddcf88b0420742d214008292" --blockmakerpassword "" --singleblockmaker --minblocktime 1 --maxblocktime 3 2>~/geth.log &
+#    hup ./execs/geth --datadir ethereum --networkid 4242 --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --port 20000 --rpcport 21000 --voteaccount "0xa587ab094681dd92a2a9d26afe4e25b99479dd08" --votepassword "" 2>~/geth.log &
+#    nohup ./execs/geth --datadir ethereum --networkid 4242 --rpc --rpcaddr 0.0.0.0 --rpcapi admin,db,eth,debug,miner,net,shh,txpool,personal,web3,quorum --port 20000 --rpcport 21000 --voteaccount "0xc582b04d99dd5bb785f625c58e193d6d90961e51" --votepassword "" 2>~/geth.log &
+#    echo Launching geth in node-01
+#    $CURRENT_DIR/../../02-deploy/03-launch/geth 1 --bootnodes $(get_bootnodes 1) $COMMON_OPTS \
+#    	--voteaccount "\"0x$(get_address $ASSETS_DIR/1_address_0)\"" \
+#    	--votepassword "\"\"" \
+#    	--blockmakeraccount "\"0x$(get_address $ASSETS_DIR/1_address_1)\"" \
+#    	--blockmakerpassword "\"\"" \
+#    	--minblocktime 1 \
+#    	--maxblocktime 2
+#    echo Launching geth in node-02
+#    $CURRENT_DIR/../../02-deploy/03-launch/geth 2 --bootnodes $(get_bootnodes 2) $COMMON_OPTS \
+#    	--voteaccount "\"0x$(get_address $ASSETS_DIR/2_address_0)\"" \
+#    	--votepassword "\"\"" \
+#    	--blockmakeraccount "\"0x$(get_address $ASSETS_DIR/2_address_1)\"" \
+#    	--blockmakerpassword "\"\"" \
+#    	--minblocktime 1 \
+#    	--maxblocktime 2
+#    echo Launching geth in node-03
+#    $CURRENT_DIR/../../02-deploy/03-launch/geth 3 --bootnodes $(get_bootnodes 3) $COMMON_OPTS \
+#    	--voteaccount "\"0x$(get_address $ASSETS_DIR/3_address_0)\"" \
+#    	--votepassword "\"\""

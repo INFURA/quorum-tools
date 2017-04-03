@@ -25,7 +25,7 @@ done < $CURRENT_DIR/../../01-servers/IPs/$CLUSTER_NAME-NODES
 SSH_COMMAND="ssh $SSH_USERNAME@${NODES[$1]}"
 
 # Just launch the node with the given parameters
-echo $SSH_COMMAND << EOF
+$SSH_COMMAND << EOF
 hostname
 
 echo -e "\n======== Launch geth  ========\n" >> /home/banketh/geth.log
@@ -33,12 +33,12 @@ echo -e "\n======== Launch geth  ========\n" >> /home/banketh/geth.log
 nohup \
 	./geth --identity \$HOSTNAME \
 		--datadir ~/ethereum ${@:2} \
-	&>> /home/banketh/geth.log &
+	&>> /home/$SSH_USERNAME/geth.log &
 EOF
 
 # Display information
-echo $SSH_COMMAND "ps aux | grep geth | grep -v grep"
-echo $SSH_COMMAND "tail -n30 /home/banketh/geth.log"
+$SSH_COMMAND "ps aux | grep geth | grep -v grep"
+$SSH_COMMAND "tail -n30 /home/banketh/geth.log"
 
 echo
 echo We are done!
