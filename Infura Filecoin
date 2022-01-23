@@ -1,0 +1,21 @@
+Infura Filecoin Documentation (1.0.0)
+Infura Support: support@infura.io
+Securing Your Credentials
+The Filecoin endpoint currently supports basic auth which requires passing in a username and password.
+
+The username is your `Project ID` and password is your `Project Secret` which you can find by navigating to your project settings at `https://infura.io/dashboard/filecoin//settings`
+
+Stateless and Streaming APIs
+Most RPC methods are stateless and are made available through HTTPS. These can be queried with curl:
+
+curl -X POST -H "Content-Type: application/json"
+  --user <PROJECT_ID>:<PROJECT_SECRET>
+  --url https://filecoin.infura.io
+  --data '{ "id": 0, "jsonrpc": "2.0", "method": "Filecoin.ChainHead", "params": [] }'
+Methods that are designed to stream updates to the client are available only through Websockets.
+
+wscat can be used to try these from CLI.
+
+wscat --auth <PROJECT_ID>:<PROJECT_SECRET> --connect wss://filecoin.infura.io
+
+> { "jsonrpc": "2.0", "method": "Filecoin.ChainNotify", "params": [], "id": 3 }
